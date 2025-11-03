@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>حديقة الورود</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&display=swap");
+
+      body {
+        margin: 0;
+        overflow: hidden;
+        height: 100vh;
+        background: linear-gradient(135deg, #f9f3f3, #e3f9e5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: "Reem Kufi", sans-serif;
+        cursor: pointer;
+        position: relative;
+      }
+
+      h1 {
+        color: #d63384;
+        font-size: 3rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: #555;
+        font-size: 1.2rem;
+      }
+
+      /* تنسيق الورد */
+      .flower {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        transform: translate(-50%, -50%) scale(0);
+        animation: grow 3s ease-in-out forwards;
+        pointer-events: none;
+      }
+
+      @keyframes grow {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+        }
+        20% {
+          transform: translate(-50%, -50%) scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -100%) scale(0.8);
+          opacity: 0;
+        }
+      }
+
+      /* شكل الوردة باستخدام CSS */
+      .petal {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background-color: #ff69b4;
+        border-radius: 50%;
+      }
+
+      .petal:nth-child(1) {
+        top: 0;
+        left: 10px;
+      }
+      .petal:nth-child(2) {
+        top: 10px;
+        left: 0;
+      }
+      .petal:nth-child(3) {
+        top: 10px;
+        left: 20px;
+      }
+      .petal:nth-child(4) {
+        top: 20px;
+        left: 10px;
+      }
+
+      .center {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 16px;
+        height: 16px;
+        background-color: #ffd700;
+        border-radius: 50%;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 10px;
+        font-size: 0.9rem;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>حديقة لجين</h1>
+    <p>اضغط في أي مكان لتنمو وردة جديدة 🌷</p>
+    <footer>© 2025 المهندس حمود</footer>
+
+    <script>
+      document.body.addEventListener("click", (e) => {
+        const flower = document.createElement("div");
+        flower.classList.add("flower");
+        flower.style.left = `${e.clientX}px`;
+        flower.style.top = `${e.clientY}px`;
+
+        // توليد لون عشوائي لطيف للبتلات
+        const colors = [
+          "#ff69b4",
+          "#ff8fab",
+          "#ffa6c1",
+          "#ffc1e3",
+          "#e056fd",
+          "#f9a8d4",
+        ];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        // إنشاء بتلات ومركز
+        for (let i = 0; i < 4; i++) {
+          const petal = document.createElement("div");
+          petal.classList.add("petal");
+          petal.style.backgroundColor = color;
+          flower.appendChild(petal);
+        }
+
+        const center = document.createElement("div");
+        center.classList.add("center");
+        flower.appendChild(center);
+
+        document.body.appendChild(flower);
+
+        setTimeout(() => flower.remove(), 3000);
+      });
+    </script>
+  </body>
+</html>
