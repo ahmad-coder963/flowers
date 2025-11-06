@@ -1,378 +1,614 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>حديقة لجين</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&display=swap");
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حديقة لجين</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&display=swap");
 
-      body {
-        margin: 0;
-        overflow: hidden;
-        height: 100vh;
-        background: linear-gradient(135deg, #f9f3f3, #e3f9e5);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        font-family: "Reem Kufi", sans-serif;
-        cursor: pointer;
-        position: relative;
-      }
+:root {
+  --rose-red: #ff5252;
+  --rose-pink: #ff79c6;
+  --rose-yellow: #ffd700;
+  --rose-purple: #bd93f9;
+  --rose-white: #f8f8f2;
+  --rose-orange: #ffb86c;
+}
 
-      h1 {
-        color: #d63384;
-        font-size: 3rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        margin-bottom: 1rem;
-        z-index: 10;
-      }
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: "Reem Kufi", sans-serif;
+  cursor: pointer;
+  background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  color: #2d5016;
+}
 
-      p {
-        color: #555;
-        font-size: 1.2rem;
-        z-index: 10;
-      }
+h1 { 
+  font-size: 3rem; 
+  text-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+  margin:20px 0 5px; 
+  color: #5a2d82;
+}
 
-      footer {
-        position: absolute;
-        bottom: 10px;
-        font-size: 0.9rem;
-        color: #777;
-        z-index: 10;
-      }
+p, #score { 
+  margin: 0 0 10px; 
+  font-size: 1.2rem; 
+  text-shadow:0 2px 5px rgba(0,0,0,0.2); 
+}
 
+#score { 
+  margin-bottom: 15px; 
+  font-size: 1.4rem;
+  color: #7b1fa2;
+}
+
+#flower-types {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.flower-type-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 20px;
+  font-family: "Reem Kufi", sans-serif;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.flower-type-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.flower-type-btn.active {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px white, 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* التراب */
+#soil {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(#5d4037, #8d6e63);
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.4);
+  z-index: 5;
+  border-top: 5px solid #4e342e;
+}
+
+/* الورود المزروعة */
+.flower {
+  position: absolute;
+  width: 80px;
+  height: 180px;
+  pointer-events: auto;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+  z-index: 10;
+  bottom: 100px;
+  transition: transform 0.3s;
+}
+
+.flower:hover {
+  transform: scale(1.05);
+}
+
+/* ساق الوردة المزروعة */
+.stem {
+  position: absolute;
+  width: 6px;
+  background: linear-gradient(to top, #2e7d32, #4caf50, #81c784);
+  border-radius: 3px;
+  bottom: 0;
+  height: 150px;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* أوراق الساق */
+.leaf {
+  position: absolute;
+  width: 25px;
+  height: 15px;
+  background: linear-gradient(to right, #388e3c, #4caf50);
+  border-radius: 0 50% 50% 0;
+  z-index: 2;
+  transform-origin: left center;
+}
+
+.leaf.left {
+  left: 3px;
+  transform: rotate(-15deg);
+}
+
+.leaf.right {
+  right: 3px;
+  transform: rotate(15deg) scaleX(-1);
+}
+
+/* زهرة الوردة */
+.bloom {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+/* بتلات الوردة - الطبقة الخارجية */
+.petal {
+  position: absolute;
+  border-radius: 50% 50% 50% 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
+  z-index: 4;
+}
+
+/* بتلات الوردة - الطبقة الداخلية */
+.inner-petal {
+  position: absolute;
+  border-radius: 50% 50% 50% 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  z-index: 5;
+}
+
+/* مركز الوردة */
+.center {
+  position: absolute;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  box-shadow: 0 0 5px rgba(255, 214, 0, 0.7);
+}
+
+/* أنواع الورود المختلفة */
+.rose-red .petal {
+  width: 35px;
+  height: 35px;
+  background: radial-gradient(circle at 30% 40%, #ff5252, #d32f2f);
+}
+
+.rose-red .inner-petal {
+  width: 25px;
+  height: 25px;
+  background: radial-gradient(circle at 40% 40%, #ff8a80, #ff5252);
+}
+
+.rose-red .center {
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle at 30% 30%, #ffd600, #ffab00);
+}
+
+.rose-pink .petal {
+  width: 32px;
+  height: 32px;
+  background: radial-gradient(circle at 30% 40%, #ff79c6, #e754a4);
+}
+
+.rose-pink .inner-petal {
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle at 40% 40%, #ffa8dd, #ff79c6);
+}
+
+.rose-pink .center {
+  width: 18px;
+  height: 18px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
+}
+
+.rose-yellow .petal {
+  width: 34px;
+  height: 34px;
+  background: radial-gradient(circle at 30% 40%, #ffd700, #ffaa00);
+}
+
+.rose-yellow .inner-petal {
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle at 40% 40%, #ffeb3b, #ffd700);
+}
+
+.rose-yellow .center {
+  width: 19px;
+  height: 19px;
+  background: radial-gradient(circle at 30% 30%, #ff9800, #ff6d00);
+}
+
+.rose-purple .petal {
+  width: 36px;
+  height: 36px;
+  background: radial-gradient(circle at 30% 40%, #bd93f9, #9a6ee0);
+}
+
+.rose-purple .inner-petal {
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 40% 40%, #d6b9ff, #bd93f9);
+}
+
+.rose-purple .center {
+  width: 21px;
+  height: 21px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
+}
+
+.rose-white .petal {
+  width: 33px;
+  height: 33px;
+  background: radial-gradient(circle at 30% 40%, #f8f8f2, #e6e6d8);
+}
+
+.rose-white .inner-petal {
+  width: 23px;
+  height: 23px;
+  background: radial-gradient(circle at 40% 40%, #ffffff, #f8f8f2);
+}
+
+.rose-white .center {
+  width: 18px;
+  height: 18px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
+}
+
+.rose-orange .petal {
+  width: 35px;
+  height: 35px;
+  background: radial-gradient(circle at 30% 40%, #ffb86c, #ff9a3c);
+}
+
+.rose-orange .inner-petal {
+  width: 25px;
+  height: 25px;
+  background: radial-gradient(circle at 40% 40%, #ffcc99, #ffb86c);
+}
+
+.rose-orange .center {
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
+}
+
+/* الورود النازلة */
+.falling-flower {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+  z-index: 2;
+}
+
+/* أنيميشن الورود النازلة */
+.falling {
+  animation: fall 8s linear forwards;
+}
+
+@keyframes fall {
+  0% { 
+    transform: translate(-50%, -50%) scale(0.8) rotate(0deg); 
+    opacity: 0.9; 
+  }
+  25% { 
+    transform: translate(-50%, 20vh) rotate(90deg) scale(1); 
+  }
+  50% { 
+    transform: translate(-50%, 40vh) rotate(180deg) scale(0.9); 
+  }
+  75% { 
+    transform: translate(-50%, 70vh) rotate(270deg) scale(0.8); 
+  }
+  100% { 
+    transform: translate(-50%, 120vh) rotate(360deg) scale(0.7); 
+    opacity: 0; 
+  }
+}
+
+/* تأثير النقر على التراب */
+.soil-click {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: soilClickEffect 0.5s forwards;
+}
+
+@keyframes soilClickEffect {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* تأثير النجمة عند الحصاد */
+.harvest-effect {
+  position: absolute;
+  font-size: 2rem;
+  pointer-events: none;
+  animation: harvestFloat 1.5s forwards;
+  z-index: 100;
+}
+
+@keyframes harvestFloat {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+}
+
+/* السحاب */
+.cloud {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.cloud-1 {
+  width: 120px;
+  height: 60px;
+  top: 10%;
+  left: 10%;
+  animation: floatCloud 25s infinite linear;
+}
+
+.cloud-2 {
+  width: 150px;
+  height: 70px;
+  top: 20%;
+  right: 5%;
+  animation: floatCloud 30s infinite linear reverse;
+}
+
+@keyframes floatCloud {
+  0% { transform: translateX(-100px); }
+  100% { transform: translateX(calc(100vw + 100px)); }
+}
+
+/* إحصائيات الورود */
+#flower-stats {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 20;
+  font-size: 0.9rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.stat-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+</style>
+</head>
+<body>
+<h1>حديقة لجين السحرية 🌹</h1>
+<p>اختر نوع الوردة ثم انقر على التراب للزراعة</p>
+<div id="score">الورد المحصود: 0</div>
+
+<div id="flower-types">
+  <button class="flower-type-btn active" style="background: #ff5252; color: white;" data-type="rose-red">ورد أحمر</button>
+  <button class="flower-type-btn" style="background: #ff79c6; color: white;" data-type="rose-pink">ورد وردي</button>
+  <button class="flower-type-btn" style="background: #ffd700;" data-type="rose-yellow">ورد أصفر</button>
+  <button class="flower-type-btn" style="background: #bd93f9; color: white;" data-type="rose-purple">ورد بنفسجي</button>
+  <button class="flower-type-btn" style="background: #f8f8f2;" data-type="rose-white">ورد أبيض</button>
+  <button class="flower-type-btn" style="background: #ffb86c;" data-type="rose-orange">ورد برتقالي</button>
+</div>
+
+<div id="flower-stats">
+  <h3 style="margin-top: 0; text-align: center;">إحصائيات الورود</h3>
+  <div class="stat-item">أحمر: <span id="count-red">0</span> <span class="stat-color" style="background: #ff5252;"></span></div>
+  <div class="stat-item">وردي: <span id="count-pink">0</span> <span class="stat-color" style="background: #ff79c6;"></span></div>
+  <div class="stat-item">أصفر: <span id="count-yellow">0</span> <span class="stat-color" style="background: #ffd700;"></span></div>
+  <div class="stat-item">بنفسجي: <span id="count-purple">0</span> <span class="stat-color" style="background: #bd93f9;"></span></div>
+  <div class="stat-item">أبيض: <span id="count-white">0</span> <span class="stat-color" style="background: #f8f8f2;"></span></div>
+  <div class="stat-item">برتقالي: <span id="count-orange">0</span> <span class="stat-color" style="background: #ffb86c;"></span></div>
+</div>
+
+<div class="cloud cloud-1"></div>
+<div class="cloud cloud-2"></div>
+
+<div id="soil"></div>
+
+<script>
+let score = 0;
+let currentFlowerType = 'rose-red';
+let flowerCounts = {
+  'rose-red': 0,
+  'rose-pink': 0,
+  'rose-yellow': 0,
+  'rose-purple': 0,
+  'rose-white': 0,
+  'rose-orange': 0
+};
+
+// زرع الوردة عند النقر على التراب
+document.getElementById("soil").addEventListener("click",(e)=>{
+  const rect = e.target.getBoundingClientRect();
+  const x = e.clientX;
+  
+  // إضافة تأثير النقر
+  const clickEffect = document.createElement("div");
+  clickEffect.classList.add("soil-click");
+  clickEffect.style.left = (x - 10) + "px";
+  clickEffect.style.bottom = "50px";
+  document.body.appendChild(clickEffect);
+  setTimeout(() => clickEffect.remove(), 500);
+  
+  // زرع الوردة
+  plantFlower(x, currentFlowerType);
+});
+
+// تغيير نوع الوردة المحدد
+document.querySelectorAll('.flower-type-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.flower-type-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    currentFlowerType = e.target.dataset.type;
+  });
+});
+
+// الورود النازلة بأنواع مختلفة
+setInterval(()=>{
+  const x = Math.random() * window.innerWidth;
+  const types = ['rose-red', 'rose-pink', 'rose-yellow', 'rose-purple', 'rose-white', 'rose-orange'];
+  const randomType = types[Math.floor(Math.random() * types.length)];
+  createFallingFlower(x, -20, randomType);
+},1200);
+
+// 🌹 زرع الوردة
+function plantFlower(x, type){
+  const flower = document.createElement("div");
+  flower.classList.add("flower", type);
+  flower.style.left = (x - 40) + "px";
+
+  // ساق الوردة
+  const stem = document.createElement("div");
+  stem.classList.add("stem");
+  flower.appendChild(stem);
+
+  // أوراق الساق
+  const leaf1 = document.createElement("div");
+  leaf1.classList.add("leaf", "left");
+  leaf1.style.bottom = "50px";
+  flower.appendChild(leaf1);
+  
+  const leaf2 = document.createElement("div");
+  leaf2.classList.add("leaf", "right");
+  leaf2.style.bottom = "90px";
+  flower.appendChild(leaf2);
+
+  // زهرة الوردة
+  const bloom = document.createElement("div");
+  bloom.classList.add("bloom");
+  flower.appendChild(bloom);
+
+  // مركز الوردة
+  const center = document.createElement("div");
+  center.classList.add("center");
+  bloom.appendChild(center);
+
+  // 6 بتلات خارجية
+  for(let i=0; i<6; i++){
+    const petal = document.createElement("div");
+    petal.classList.add("petal");
+    const angle = i*60;
+    petal.style.transform = `rotate(${angle}deg) translateY(-25px)`;
+    bloom.appendChild(petal);
+  }
+
+  // 5 بتلات داخلية
+  for(let i=0; i<5; i++){
+    const innerPetal = document.createElement("div");
+    innerPetal.classList.add("inner-petal");
+    const angle = i*72;
+    innerPetal.style.transform = `rotate(${angle}deg) translateY(-15px)`;
+    bloom.appendChild(innerPetal);
+  }
+
+  // زيادة العداد
+  flowerCounts[type]++;
+  updateFlowerStats();
+
+  // حصاد الوردة
+  flower.addEventListener("click",(e)=>{
+    e.stopPropagation();
     
-      .flower {
-        position: absolute;
-        width: 60px; 
-        height: 60px;
-        transform: translate(-50%, -50%) scale(0);
-        pointer-events: none;
-      }
-
-      @keyframes grow-float {
-        0% {
-          transform: translate(-50%, -50%) scale(0);
-          opacity: 0;
-        }
-        20% {
-          transform: translate(-50%, -50%) scale(1.1);
-          opacity: 1;
-        }
-        100% {
-          transform: translate(-50%, -150%) scale(0.8);
-          opacity: 0;
-        }
-      }
-
-      @keyframes grow-rotate-fade {
-        0% {
-          transform: translate(-50%, -50%) scale(0) rotate(0deg);
-          opacity: 0;
-        }
-        20% {
-          transform: translate(-50%, -50%) scale(1.1);
-          opacity: 1;
-        }
-        100% {
-          transform: translate(-50%, -100%) scale(0.5) rotate(180deg);
-          opacity: 0;
-        }
-      }
-      .flower-type-1 {
-        --petal-color: #ff69b4;
-        --center-color: #ffd700;
-      }
-      .flower-type-1 .petal {
-        position: absolute;
-        width: 25px;
-        height: 25px;
-        background-color: var(--petal-color);
-        border-radius: 50% 0 50% 0;
-      }
-      .flower-type-1 .petal-1 {
-        top: 5px;
-        left: 20px;
-        transform: rotate(0deg);
-      }
-      .flower-type-1 .petal-2 {
-        top: 20px;
-        left: 5px;
-        transform: rotate(0deg);
-      }
-      .flower-type-1 .petal-3 {
-        top: 20px;
-        left: 35px;
-        transform: rotate(0deg);
-      }
-      .flower-type-1 .petal-4 {
-        top: 35px;
-        left: 20px;
-        transform: rotate(0deg);
-      }
-      .flower-type-1 .center {
-        position: absolute;
-        top: 22px;
-        left: 22px;
-        width: 16px;
-        height: 16px;
-        background-color: var(--center-color);
-        border-radius: 50%;
-        border: 2px solid #fff;
-      }
-
-      .flower-type-2 {
-        --petal-color: #ffffff;
-        --center-color: #ffc857;
-      }
-      .flower-type-2 .center {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background-color: var(--center-color);
-        border-radius: 50%;
-        top: 20px;
-        left: 20px;
-        border: 3px solid #e0ac43;
-      }
-      .flower-type-2 .petal-daisy {
-        position: absolute;
-        width: 10px;
-        height: 25px;
-        background-color: var(--petal-color);
-        border-radius: 5px 5px 20px 20px;
-        left: 25px; /* (60-10)/2 */
-        top: 5px; /* (60-50)/2 */
-        transform-origin: 5px 25px; /* (width/2) (height) */
-      }
-
-      .flower-type-3 {
-        --petal-color: #e63946;
-      }
-      .flower-type-3 .tulip-base {
-        position: absolute;
-        width: 30px;
-        height: 40px;
-        background-color: var(--petal-color);
-        border-radius: 40% 40% 10px 10px;
-        top: 10px;
-        left: 15px;
-      }
-      .flower-type-3 .tulip-petal {
-        position: absolute;
-        width: 18px;
-        height: 30px;
-        background-color: var(--petal-color);
-        border-radius: 50% 50% 0 0;
-      }
-      .flower-type-3 .petal-left {
-        top: 10px;
-        left: 10px;
-        transform: rotate(-10deg);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      }
-      .flower-type-3 .petal-right {
-        top: 10px;
-        left: 32px;
-        transform: rotate(10deg);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      }
-      .flower-type-3 .stem {
-        position: absolute;
-        width: 4px;
-        height: 20px;
-        background-color: #70a9a1;
-        top: 48px;
-        left: 28px;
-        border-radius: 2px;
-      }
-
-      .flower-type-4 {
-        --petal-color: #ffc1e3;
-        --center-color: #ffd700;
-      }
-      .flower-type-4 .petal-blossom {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background: var(--petal-color);
-        border-radius: 0 50% 50% 50%;
-        left: 20px;
-        top: 10px;
-        transform-origin: 10px 20px; /* (width/2) (height) */
-      }
-      .flower-type-4 .center {
-        position: absolute;
-        top: 25px;
-        left: 25px;
-        width: 10px;
-        height: 10px;
-        background-color: var(--center-color);
-        border-radius: 50%;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>حديقة لجين</h1>
-    <p>اضغطي في أي مكان لتطلع وردة جديدة 🌷</p>
-    <footer>© 2025 المهندس حمود</footer>
-
-    <script>
-      // لوحات الألوان
-      const palettes = {
-        type1: [
-          "#ff69b4",
-          "#ff8fab",
-          "#ffa6c1",
-          "#e056fd",
-          "#f9a8d4",
-          "#ffc1e3",
-        ],
-        type2: ["#FFFFFF"], 
-        type3: [
-          "#e63946",
-          "#f77f00",
-          "#fcbf49",
-          "#f94144",
-          "#ffb703",
-          "#e6b800",
-        ],
-        type4: ["#ffc1e3", "#ffb3de", "#ffafcc", "#ffbde6"],
-      };
-
- 
-      const flowerTypes = ["type1", "type2", "type3", "type4"];
-
-   
-      const animations = ["grow-float", "grow-rotate-fade"];
-
+    // تأثير الحصاد
+    const harvestEffect = document.createElement("div");
+    harvestEffect.classList.add("harvest-effect");
+    harvestEffect.textContent = "🌹";
+    harvestEffect.style.left = e.clientX + "px";
+    harvestEffect.style.top = e.clientY + "px";
+    document.body.appendChild(harvestEffect);
     
-      document.body.addEventListener("click", (e) => {
-        createFlower(e.clientX, e.clientY);
-      });
-
-      function createFlower(x, y) {
-        const flower = document.createElement("div");
-        flower.classList.add("flower");
-
-     
-        const type =
-          flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
-        flower.classList.add(`flower-type-${type.replace("type", "")}`);
-
-       
-        const animationName =
-          animations[Math.floor(Math.random() * animations.length)];
-        flower.style.animation = `${animationName} 3s ease-in-out forwards`;
-
-     
-        flower.style.left = `${x}px`;
-        flower.style.top = `${y}px`;
-
-     
-        switch (type) {
-          case "type1":
-            buildFlowerType1(flower);
-            break;
-          case "type2":
-            buildFlowerType2(flower);
-            break;
-          case "type3":
-            buildFlowerType3(flower);
-            break;
-          case "type4":
-            buildFlowerType4(flower);
-            break;
-        }
-
+    flower.style.transition = "transform 0.5s, opacity 0.5s";
+    flower.style.transform = "scale(1.5)";
+    flower.style.opacity = "0";
     
-        document.body.appendChild(flower);
+    setTimeout(() => {
+      flower.remove();
+      harvestEffect.remove();
+      score++;
+      flowerCounts[type]--;
+      updateFlowerStats();
+      document.getElementById("score").innerText = `الورد المحصود: ${score}`;
+    }, 500);
+  });
 
-   
-        setTimeout(() => flower.remove(), 3000);
-      }
+  document.body.appendChild(flower);
+}
 
-    
-      function getRandomColor(type) {
-        const palette = palettes[type] || palettes.type1;
-        return palette[Math.floor(Math.random() * palette.length)];
-      }
+// 🌼 إنشاء وردة نازلة
+function createFallingFlower(x, y, type){
+  const flower = document.createElement("div");
+  flower.classList.add("falling-flower", "falling", type);
+  flower.style.left = x + "px";
+  flower.style.top = y + "px";
 
-   
+  // مركز الوردة النازلة
+  const center = document.createElement("div");
+  center.classList.add("center");
+  center.style.width = "15px";
+  center.style.height = "15px";
+  flower.appendChild(center);
 
-      function buildFlowerType1(flower) {
-        const color = getRandomColor("type1");
-        flower.style.setProperty("--petal-color", color);
-        flower.style.setProperty("--center-color", "#ffd700");
+  // 5 بتلات خارجية للوردة النازلة
+  for(let i=0; i<5; i++){
+    const petal = document.createElement("div");
+    petal.classList.add("petal");
+    petal.style.width = "20px";
+    petal.style.height = "20px";
+    const angle = i*72;
+    petal.style.transform = `rotate(${angle}deg) translateY(-12px)`;
+    flower.appendChild(petal);
+  }
 
-        ["petal-1", "petal-2", "petal-3", "petal-4"].forEach((cls) => {
-          const petal = document.createElement("div");
-          petal.classList.add("petal", cls);
-          flower.appendChild(petal);
-        });
+  document.body.appendChild(flower);
+  setTimeout(()=>flower.remove(),8000);
+}
 
-        const center = document.createElement("div");
-        center.classList.add("center");
-        flower.appendChild(center);
-      }
-
-      function buildFlowerType2(flower) {
-        const color = getRandomColor("type2"); // أبيض
-        flower.style.setProperty("--petal-color", color);
-        flower.style.setProperty("--center-color", "#ffc857");
-
-        const center = document.createElement("div");
-        center.classList.add("center");
-        flower.appendChild(center);
-
-        // 12 بتلة للأقحوان
-        for (let i = 0; i < 12; i++) {
-          const petal = document.createElement("div");
-          petal.classList.add("petal-daisy");
-          petal.style.transform = `rotate(${i * 30}deg)`; // 360 / 12 = 30
-          flower.appendChild(petal);
-        }
-      }
-
-      function buildFlowerType3(flower) {
-        const color = getRandomColor("type3");
-        flower.style.setProperty("--petal-color", color);
-
-        const stem = document.createElement("div");
-        stem.classList.add("stem");
-        flower.appendChild(stem);
-
-        const base = document.createElement("div");
-        base.classList.add("tulip-base");
-        flower.appendChild(base);
-
-        const p1 = document.createElement("div");
-        p1.classList.add("tulip-petal", "petal-left");
-        flower.appendChild(p1);
-
-        const p2 = document.createElement("div");
-        p2.classList.add("tulip-petal", "petal-right");
-        flower.appendChild(p2);
-      }
-
-      function buildFlowerType4(flower) {
-        const color = getRandomColor("type4");
-        flower.style.setProperty("--petal-color", color);
-        flower.style.setProperty("--center-color", "#fff2a8");
-
-        const center = document.createElement("div");
-        center.classList.add("center");
-        flower.appendChild(center);
-
-        for (let i = 0; i < 5; i++) {
-          const petal = document.createElement("div");
-          petal.classList.add("petal-blossom");
-          petal.style.transform = `rotate(${i * 72}deg)`; // 360 / 5 = 72
-          flower.appendChild(petal);
-        }
-      }
-    </script>
-  </body>
+// تحديث إحصائيات الورود
+function updateFlowerStats() {
+  document.getElementById('count-red').textContent = flowerCounts['rose-red'];
+  document.getElementById('count-pink').textContent = flowerCounts['rose-pink'];
+  document.getElementById('count-yellow').textContent = flowerCounts['rose-yellow'];
+  document.getElementById('count-purple').textContent = flowerCounts['rose-purple'];
+  document.getElementById('count-white').textContent = flowerCounts['rose-white'];
+  document.getElementById('count-orange').textContent = flowerCounts['rose-orange'];
+}
+</script>
+</body>
 </html>
