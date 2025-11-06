@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -31,37 +31,42 @@ body {
 }
 
 h1 { 
-  font-size: 3rem; 
+  font-size: 2rem; 
   text-shadow: 0 4px 10px rgba(0,0,0,0.2); 
-  margin:20px 0 5px; 
+  margin:10px 0 5px; 
   color: #5a2d82;
+  text-align: center;
 }
 
 p, #score { 
   margin: 0 0 10px; 
-  font-size: 1.2rem; 
+  font-size: 1rem; 
   text-shadow:0 2px 5px rgba(0,0,0,0.2); 
+  text-align: center;
 }
 
 #score { 
-  margin-bottom: 15px; 
-  font-size: 1.4rem;
+  margin-bottom: 10px; 
+  font-size: 1.2rem;
   color: #7b1fa2;
 }
 
 #flower-types {
   display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 0 10px;
 }
 
 .flower-type-btn {
-  padding: 8px 15px;
+  padding: 6px 12px;
   border: none;
   border-radius: 20px;
   font-family: "Reem Kufi", sans-serif;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   transition: all 0.3s;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
@@ -365,16 +370,16 @@ p, #score {
 }
 
 .cloud-1 {
-  width: 120px;
-  height: 60px;
+  width: 80px;
+  height: 40px;
   top: 10%;
   left: 10%;
   animation: floatCloud 25s infinite linear;
 }
 
 .cloud-2 {
-  width: 150px;
-  height: 70px;
+  width: 100px;
+  height: 50px;
   top: 20%;
   right: 5%;
   animation: floatCloud 30s infinite linear reverse;
@@ -385,31 +390,55 @@ p, #score {
   100% { transform: translateX(calc(100vw + 100px)); }
 }
 
-/* إحصائيات الورود */
-#flower-stats {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  z-index: 20;
-  font-size: 0.9rem;
+/* تصميم متجاوب للشاشات الصغيرة */
+@media (max-width: 480px) {
+  h1 { 
+    font-size: 1.7rem; 
+    margin: 8px 0 3px;
+  }
+  
+  p, #score { 
+    font-size: 0.9rem; 
+  }
+  
+  #score { 
+    font-size: 1rem;
+  }
+  
+  #flower-types {
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  
+  .flower-type-btn {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .cloud-1 {
+    width: 60px;
+    height: 30px;
+  }
+  
+  .cloud-2 {
+    width: 80px;
+    height: 40px;
+  }
 }
 
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-.stat-color {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-left: 5px;
+@media (max-width: 360px) {
+  h1 { 
+    font-size: 1.5rem; 
+  }
+  
+  #flower-types {
+    gap: 4px;
+  }
+  
+  .flower-type-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
 }
 </style>
 </head>
@@ -427,16 +456,6 @@ p, #score {
   <button class="flower-type-btn" style="background: #ffb86c;" data-type="rose-orange">ورد برتقالي</button>
 </div>
 
-<div id="flower-stats">
-  <h3 style="margin-top: 0; text-align: center;">إحصائيات الورود</h3>
-  <div class="stat-item">أحمر: <span id="count-red">0</span> <span class="stat-color" style="background: #ff5252;"></span></div>
-  <div class="stat-item">وردي: <span id="count-pink">0</span> <span class="stat-color" style="background: #ff79c6;"></span></div>
-  <div class="stat-item">أصفر: <span id="count-yellow">0</span> <span class="stat-color" style="background: #ffd700;"></span></div>
-  <div class="stat-item">بنفسجي: <span id="count-purple">0</span> <span class="stat-color" style="background: #bd93f9;"></span></div>
-  <div class="stat-item">أبيض: <span id="count-white">0</span> <span class="stat-color" style="background: #f8f8f2;"></span></div>
-  <div class="stat-item">برتقالي: <span id="count-orange">0</span> <span class="stat-color" style="background: #ffb86c;"></span></div>
-</div>
-
 <div class="cloud cloud-1"></div>
 <div class="cloud cloud-2"></div>
 
@@ -445,14 +464,6 @@ p, #score {
 <script>
 let score = 0;
 let currentFlowerType = 'rose-red';
-let flowerCounts = {
-  'rose-red': 0,
-  'rose-pink': 0,
-  'rose-yellow': 0,
-  'rose-purple': 0,
-  'rose-white': 0,
-  'rose-orange': 0
-};
 
 // زرع الوردة عند النقر على التراب
 document.getElementById("soil").addEventListener("click",(e)=>{
@@ -538,10 +549,6 @@ function plantFlower(x, type){
     bloom.appendChild(innerPetal);
   }
 
-  // زيادة العداد
-  flowerCounts[type]++;
-  updateFlowerStats();
-
   // حصاد الوردة
   flower.addEventListener("click",(e)=>{
     e.stopPropagation();
@@ -562,8 +569,6 @@ function plantFlower(x, type){
       flower.remove();
       harvestEffect.remove();
       score++;
-      flowerCounts[type]--;
-      updateFlowerStats();
       document.getElementById("score").innerText = `الورد المحصود: ${score}`;
     }, 500);
   });
@@ -599,17 +604,6 @@ function createFallingFlower(x, y, type){
   document.body.appendChild(flower);
   setTimeout(()=>flower.remove(),8000);
 }
-
-// تحديث إحصائيات الورود
-function updateFlowerStats() {
-  document.getElementById('count-red').textContent = flowerCounts['rose-red'];
-  document.getElementById('count-pink').textContent = flowerCounts['rose-pink'];
-  document.getElementById('count-yellow').textContent = flowerCounts['rose-yellow'];
-  document.getElementById('count-purple').textContent = flowerCounts['rose-purple'];
-  document.getElementById('count-white').textContent = flowerCounts['rose-white'];
-  document.getElementById('count-orange').textContent = flowerCounts['rose-orange'];
-}
 </script>
 </body>
 </html>
-
