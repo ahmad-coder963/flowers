@@ -1,609 +1,499 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حديقة لجين</title>
-<style>
-@import url("https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600&display=swap");
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لعبة الأزهار — ملف واحد (ثيم زهري)</title>
+  <style>
+    :root{
+      --bg:#ffeaf2; --panel:#fff7fb; --text:#2b2443; --muted:#7a6d8a;
+      --stroke:#f2c6d8; --accent:#ff8ab3; --accent2:#ffb6cc; --good:#1aa865; --bad:#ff4f7a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:"Cairo", system-ui, -apple-system, Segoe UI, Roboto, Arial; background:radial-gradient(1200px 600px at 70% -10%, #ffd6e7 0%, transparent 60%), var(--bg); color:var(--text)}
 
-:root {
-  --rose-red: #ff5252;
-  --rose-pink: #ff79c6;
-  --rose-yellow: #ffd700;
-  --rose-purple: #bd93f9;
-  --rose-white: #f8f8f2;
-  --rose-orange: #ffb86c;
-}
+    header{position:sticky; top:0; z-index:5; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:12px 16px; background:linear-gradient(180deg, rgba(255,234,242,.95), rgba(255,234,242,.6) 60%, transparent); border-bottom:1px solid var(--stroke); backdrop-filter: blur(6px)}
+    .title{display:flex; align-items:center; gap:10px; font-weight:900}
+    .title .logo{font-size:26px}
+    .toolbar{display:flex; gap:8px; flex-wrap:wrap}
+    .btn{background:linear-gradient(180deg, #ffdceb, #ffd3e6); border:1px solid #f2b9cf; color:var(--text); padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s transform,.15s box-shadow; font-weight:800; display:flex; align-items:center; gap:8px}
+    .btn:hover{transform:translateY(-1px); box-shadow:0 8px 20px rgba(0,0,0,.1)}
+    .btn.active{outline:2px solid var(--accent); box-shadow:0 0 0 6px rgba(255,138,179,.12) inset}
+    .btn.small{padding:8px 10px; font-size:14px}
 
-body {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-  font-family: "Reem Kufi", sans-serif;
-  cursor: pointer;
-  background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  color: #2d5016;
-}
+    .wrap{display:grid; grid-template-columns:320px 1fr 360px; gap:16px; padding:16px; max-width:1300px; margin:0 auto}
+    .panel{background:linear-gradient(180deg, #fff9fc, #ffedf4); border:1px solid var(--stroke); border-radius:16px; padding:14px}
+    .panel h3{margin:6px 0 12px; color:#513a62; font-size:16px}
 
-h1 { 
-  font-size: 2rem; 
-  text-shadow: 0 4px 10px rgba(0,0,0,0.2); 
-  margin:10px 0 5px; 
-  color: #5a2d82;
-  text-align: center;
-}
+    .legend{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-top:6px}
+    .opt{display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--stroke); border-radius:12px; cursor:pointer; background:linear-gradient(180deg,#fff, #fff4f8)}
+    .opt.active{outline:2px solid var(--accent2); box-shadow:0 0 0 6px rgba(255,182,204,.16) inset}
+    .name{font-weight:900}
 
-p, #score { 
-  margin: 0 0 10px; 
-  font-size: 1rem; 
-  text-shadow:0 2px 5px rgba(0,0,0,0.2); 
-  text-align: center;
-}
+    .garden{display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; padding:12px; background:linear-gradient(180deg,#ffe9f3,#ffe2ef); border:1px dashed #f2b9cf; border-radius:16px}
+    .plot{min-height:110px; border-radius:14px; background:radial-gradient(circle at 50% 30%, #8a5c3b 0%, #6e472c 45%, #58351d 70%); border:1px solid #a3764f; position:relative; overflow:hidden; cursor:pointer; display:flex; align-items:center; justify-content:center}
+    .plot.empty{opacity:.95}
+    .plot .waterbar{position:absolute; left:8px; right:8px; top:8px; height:8px; border-radius:99px; background:#ffd3e6; border:1px solid #f2b9cf; overflow:hidden}
+    .plot .waterbar > span{display:block; height:100%; width:0%; background:linear-gradient(90deg, #ffb6cc, #ff8ab3); transition:width .3s ease}
+    .plot .label{position:absolute; top:20px; left:0; right:0; text-align:center; font-size:12px; color:#4e3f63}
+    .seed{position:absolute; bottom:10px; font-size:20px; opacity:.9}
+    .sprout{position:absolute; bottom:10px; font-size:24px}
+    .bud{position:absolute; bottom:12px; font-size:26px}
+    .bloom{position:absolute; bottom:12px; font-size:30px; filter:drop-shadow(0 2px 6px rgba(255,255,255,.25))}
 
-#score { 
-  margin-bottom: 10px; 
-  font-size: 1.2rem;
-  color: #7b1fa2;
-}
+    .inv{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+    .card{background:linear-gradient(180deg,#fff7fb,#ffedf4); border:1px solid #f2c6d8; border-radius:14px; padding:10px; display:flex; align-items:center; justify-content:space-between}
+    .qty{background:#ffe3ee; border:1px solid #f9c5د7; padding:2px 8px; border-radius:999px; font-weight:800; color:#7b2e4a}
 
-#flower-types {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  padding: 0 10px;
-}
+    .bouquet{display:grid; grid-template-rows:auto auto 1fr auto; gap:10px}
+    .bouquet-canvas{height:360px; border-radius:20px; border:1px solid #f2b9cf; background:radial-gradient(800px 360px at 50% -10%, #ffd6e7 0%, #ffe9f3 65%); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden}
+    .bouquet-canvas .glow{position:absolute; inset:-20%; background:radial-gradient(ellipse at 50% 0%, rgba(255,182,204,.18), transparent 60%); pointer-events:none}
+    .bouquet-canvas svg{width:100%; height:100%; display:block}
 
-.flower-type-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 20px;
-  font-family: "Reem Kufi", sans-serif;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
+    .flowers{display:none}
 
-.flower-type-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
+    .bouquet-controls{display:grid; grid-template-columns:repeat(4, 1fr); gap:8px}
+    .hint{color:var(--muted); font-size:13px}
+    .badge{background:#ffe7f0; border:1px solid #f4c2d6; color:#6a3e57; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:800}
+    .sep{height:1px; background:linear-gradient(90deg, transparent, #f2c6d8, transparent); margin:10px 0}
+    .flex{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    .grow{flex:1}
+    footer{text-align:center; color:#7a6d8a; padding:18px 8px}
 
-.flower-type-btn.active {
-  transform: scale(1.05);
-  box-shadow: 0 0 0 3px white, 0 4px 8px rgba(0,0,0,0.3);
-}
-
-/* التراب */
-#soil {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 100px;
-  background: linear-gradient(#5d4037, #8d6e63);
-  box-shadow: inset 0 5px 15px rgba(0,0,0,0.4);
-  z-index: 5;
-  border-top: 5px solid #4e342e;
-}
-
-/* الورود المزروعة */
-.flower {
-  position: absolute;
-  width: 80px;
-  height: 180px;
-  pointer-events: auto;
-  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
-  z-index: 10;
-  bottom: 100px;
-  transition: transform 0.3s;
-}
-
-.flower:hover {
-  transform: scale(1.05);
-}
-
-/* ساق الوردة المزروعة */
-.stem {
-  position: absolute;
-  width: 6px;
-  background: linear-gradient(to top, #2e7d32, #4caf50, #81c784);
-  border-radius: 3px;
-  bottom: 0;
-  height: 150px;
-  z-index: 1;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* أوراق الساق */
-.leaf {
-  position: absolute;
-  width: 25px;
-  height: 15px;
-  background: linear-gradient(to right, #388e3c, #4caf50);
-  border-radius: 0 50% 50% 0;
-  z-index: 2;
-  transform-origin: left center;
-}
-
-.leaf.left {
-  left: 3px;
-  transform: rotate(-15deg);
-}
-
-.leaf.right {
-  right: 3px;
-  transform: rotate(15deg) scaleX(-1);
-}
-
-/* زهرة الوردة */
-.bloom {
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-}
-
-/* بتلات الوردة - الطبقة الخارجية */
-.petal {
-  position: absolute;
-  border-radius: 50% 50% 50% 50%;
-  top: 50%;
-  left: 50%;
-  transform-origin: center;
-  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
-  z-index: 4;
-}
-
-/* بتلات الوردة - الطبقة الداخلية */
-.inner-petal {
-  position: absolute;
-  border-radius: 50% 50% 50% 50%;
-  top: 50%;
-  left: 50%;
-  transform-origin: center;
-  z-index: 5;
-}
-
-/* مركز الوردة */
-.center {
-  position: absolute;
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 6;
-  box-shadow: 0 0 5px rgba(255, 214, 0, 0.7);
-}
-
-/* أنواع الورود المختلفة */
-.rose-red .petal {
-  width: 35px;
-  height: 35px;
-  background: radial-gradient(circle at 30% 40%, #ff5252, #d32f2f);
-}
-
-.rose-red .inner-petal {
-  width: 25px;
-  height: 25px;
-  background: radial-gradient(circle at 40% 40%, #ff8a80, #ff5252);
-}
-
-.rose-red .center {
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle at 30% 30%, #ffd600, #ffab00);
-}
-
-.rose-pink .petal {
-  width: 32px;
-  height: 32px;
-  background: radial-gradient(circle at 30% 40%, #ff79c6, #e754a4);
-}
-
-.rose-pink .inner-petal {
-  width: 22px;
-  height: 22px;
-  background: radial-gradient(circle at 40% 40%, #ffa8dd, #ff79c6);
-}
-
-.rose-pink .center {
-  width: 18px;
-  height: 18px;
-  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
-}
-
-.rose-yellow .petal {
-  width: 34px;
-  height: 34px;
-  background: radial-gradient(circle at 30% 40%, #ffd700, #ffaa00);
-}
-
-.rose-yellow .inner-petal {
-  width: 24px;
-  height: 24px;
-  background: radial-gradient(circle at 40% 40%, #ffeb3b, #ffd700);
-}
-
-.rose-yellow .center {
-  width: 19px;
-  height: 19px;
-  background: radial-gradient(circle at 30% 30%, #ff9800, #ff6d00);
-}
-
-.rose-purple .petal {
-  width: 36px;
-  height: 36px;
-  background: radial-gradient(circle at 30% 40%, #bd93f9, #9a6ee0);
-}
-
-.rose-purple .inner-petal {
-  width: 26px;
-  height: 26px;
-  background: radial-gradient(circle at 40% 40%, #d6b9ff, #bd93f9);
-}
-
-.rose-purple .center {
-  width: 21px;
-  height: 21px;
-  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
-}
-
-.rose-white .petal {
-  width: 33px;
-  height: 33px;
-  background: radial-gradient(circle at 30% 40%, #f8f8f2, #e6e6d8);
-}
-
-.rose-white .inner-petal {
-  width: 23px;
-  height: 23px;
-  background: radial-gradient(circle at 40% 40%, #ffffff, #f8f8f2);
-}
-
-.rose-white .center {
-  width: 18px;
-  height: 18px;
-  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
-}
-
-.rose-orange .petal {
-  width: 35px;
-  height: 35px;
-  background: radial-gradient(circle at 30% 40%, #ffb86c, #ff9a3c);
-}
-
-.rose-orange .inner-petal {
-  width: 25px;
-  height: 25px;
-  background: radial-gradient(circle at 40% 40%, #ffcc99, #ffb86c);
-}
-
-.rose-orange .center {
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle at 30% 30%, #ffd700, #ffaa00);
-}
-
-/* الورود النازلة */
-.falling-flower {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  pointer-events: none;
-  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
-  z-index: 2;
-}
-
-/* أنيميشن الورود النازلة */
-.falling {
-  animation: fall 8s linear forwards;
-}
-
-@keyframes fall {
-  0% { 
-    transform: translate(-50%, -50%) scale(0.8) rotate(0deg); 
-    opacity: 0.9; 
-  }
-  25% { 
-    transform: translate(-50%, 20vh) rotate(90deg) scale(1); 
-  }
-  50% { 
-    transform: translate(-50%, 40vh) rotate(180deg) scale(0.9); 
-  }
-  75% { 
-    transform: translate(-50%, 70vh) rotate(270deg) scale(0.8); 
-  }
-  100% { 
-    transform: translate(-50%, 120vh) rotate(360deg) scale(0.7); 
-    opacity: 0; 
-  }
-}
-
-/* تأثير النقر على التراب */
-.soil-click {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  pointer-events: none;
-  animation: soilClickEffect 0.5s forwards;
-}
-
-@keyframes soilClickEffect {
-  0% { transform: scale(0); opacity: 1; }
-  100% { transform: scale(3); opacity: 0; }
-}
-
-/* تأثير النجمة عند الحصاد */
-.harvest-effect {
-  position: absolute;
-  font-size: 2rem;
-  pointer-events: none;
-  animation: harvestFloat 1.5s forwards;
-  z-index: 100;
-}
-
-@keyframes harvestFloat {
-  0% { transform: translateY(0) scale(1); opacity: 1; }
-  100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
-}
-
-/* السحاب */
-.cloud {
-  position: absolute;
-  background: white;
-  border-radius: 50%;
-  opacity: 0.8;
-  z-index: 1;
-}
-
-.cloud-1 {
-  width: 80px;
-  height: 40px;
-  top: 10%;
-  left: 10%;
-  animation: floatCloud 25s infinite linear;
-}
-
-.cloud-2 {
-  width: 100px;
-  height: 50px;
-  top: 20%;
-  right: 5%;
-  animation: floatCloud 30s infinite linear reverse;
-}
-
-@keyframes floatCloud {
-  0% { transform: translateX(-100px); }
-  100% { transform: translateX(calc(100vw + 100px)); }
-}
-
-/* تصميم متجاوب للشاشات الصغيرة */
-@media (max-width: 480px) {
-  h1 { 
-    font-size: 1.7rem; 
-    margin: 8px 0 3px;
-  }
-  
-  p, #score { 
-    font-size: 0.9rem; 
-  }
-  
-  #score { 
-    font-size: 1rem;
-  }
-  
-  #flower-types {
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-  
-  .flower-type-btn {
-    padding: 5px 10px;
-    font-size: 0.8rem;
-  }
-  
-  .cloud-1 {
-    width: 60px;
-    height: 30px;
-  }
-  
-  .cloud-2 {
-    width: 80px;
-    height: 40px;
-  }
-}
-
-@media (max-width: 360px) {
-  h1 { 
-    font-size: 1.5rem; 
-  }
-  
-  #flower-types {
-    gap: 4px;
-  }
-  
-  .flower-type-btn {
-    padding: 4px 8px;
-    font-size: 0.75rem;
-  }
-}
-</style>
+    /* تجاوب */
+    @media (max-width: 1100px){ .wrap{ grid-template-columns:1fr 1fr; } }
+    @media (max-width: 800px){ header{flex-wrap:wrap; gap:8px} .wrap{grid-template-columns:1fr} .garden{grid-template-columns:repeat(3,1fr)} .bouquet-canvas{height:300px} .btn{padding:12px 16px; border-radius:14px} .toolbar .btn{flex:1} }
+    @media (max-width: 520px){ .garden{grid-template-columns:repeat(2,1fr)} .plot{min-height:120px} .bouquet-canvas{height:260px} .legend{grid-template-columns:1fr} .inv{grid-template-columns:1fr} .toolbar{gap:6px} .toolbar .btn{min-width:calc(50% - 6px)} }
+  </style>
 </head>
 <body>
-<h1>حديقة لجين</h1>
-<p>اختاري لون الوردة </p>
-<div id="score">الوردات المحصودين: 0</div>
+  <header>
+    <div class="title"><span class="logo">🌸</span> لعبة الأزهار — ثيم زهري</div>
+    <div class="toolbar">
+      <button class="btn small" id="tool-plant">🌱 زرع</button>
+      <button class="btn small" id="tool-water">💧 سقي</button>
+      <button class="btn small" id="tool-harvest">✂️ حصاد</button>
+      <button class="btn small" id="tool-shovel">🪓 إزالة</button>
+      <span class="badge" id="status">وضع: زرع</span>
+    </div>
+  </header>
 
-<div id="flower-types">
-  <button class="flower-type-btn active" style="background: #ff5252; color: white;" data-type="rose-red">ورد أحمر</button>
-  <button class="flower-type-btn" style="background: #ff79c6; color: white;" data-type="rose-pink">ورد وردي</button>
-  <button class="flower-type-btn" style="background: #ffd700;" data-type="rose-yellow">ورد أصفر</button>
-  <button class="flower-type-btn" style="background: #bd93f9; color: white;" data-type="rose-purple">ورد بنفسجي</button>
-  <button class="flower-type-btn" style="background: #f8f8f2;" data-type="rose-white">ورد أبيض</button>
-  <button class="flower-type-btn" style="background: #ffb86c;" data-type="rose-orange">ورد برتقالي</button>
-</div>
+  <main class="wrap">
+    <!-- يمين: اختيار النوع والمخزون -->
+    <section class="panel" aria-label="اختيار النوع">
+      <h3>١) اختر نوع الزهرة للبذرة</h3>
+      <div class="legend" id="flowerTypes"></div>
+      <div class="sep"></div>
+      <p class="hint">اضغط أي قطعة أرض فارغة لزرع البذرة، اسقِ 3 مرات حتى تزهر، ثم احصد لتجمع الزهور.</p>
+      <div class="sep"></div>
+      <h3>المخزون (المحصول)</h3>
+      <div class="inv" id="inventory"></div>
+    </section>
 
-<div class="cloud cloud-1"></div>
-<div class="cloud cloud-2"></div>
+    <!-- وسط: الحديقة -->
+    <section class="panel" aria-label="حديقة">
+      <h3>٢) الحديقة</h3>
+      <div class="garden" id="garden" aria-live="polite">
+        <!-- Fallback ثابت يظهر حتى قبل تشغيل الجافاسكربت -->
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+        <div class="plot empty"><div class="waterbar"><span></span></div><span class="seed" style="opacity:.35">—</span><div class="label">قطعة أرض فارغة</div></div>
+      </div>
+      <div class="sep"></div>
+      <div class="flex">
+        <div class="badge">كل نبتة تحتاج 3 مرات سقي لتزهر 🌧️</div>
+        <div class="grow"></div>
+        <button class="btn small" id="btn-fill">ملء الحديقة عشوائيًا</button>
+        <button class="btn small" id="btn-clear">مسح الحديقة</button>
+      </div>
+    </section>
 
-<div id="soil"></div>
+    <!-- يسار: البوكيه -->
+    <section class="panel" aria-label="بوكيه">
+      <h3>٣) اصنع بوكيه الورد (ملفوف)</h3>
+      <div class="bouquet">
+        <div class="bouquet-canvas" id="bouquetCanvas">
+          <div class="glow"></div>
+          <svg id="bouquetSvg" viewBox="0 0 400 360" aria-label="معاينة البوكيه"></svg>
+        </div>
+        <div class="bouquet-controls" id="bouquetControls"></div>
+        <div class="flex">
+          <input class="btn grow" id="bouquetName" placeholder="اسم البوكيه (اختياري)" />
+          <button class="btn" id="makeBouquet">💐 أنشئ البوكيه</button>
+          <button class="btn" id="exportPng">📸 تصدير كصورة</button>
+        </div>
+        <div class="hint" id="bouquetStat">لا يوجد بوكيه بعد.</div>
+      </div>
+    </section>
+  </main>
 
-<script>
-let score = 0;
-let currentFlowerType = 'rose-red';
+  <footer>بُنيت بملف واحد — HTML/CSS/JS • ثيم زهري 🌸</footer>
 
-// زرع الوردة عند النقر على التراب
-document.getElementById("soil").addEventListener("click",(e)=>{
-  const rect = e.target.getBoundingClientRect();
-  const x = e.clientX;
-  
-  // إضافة تأثير النقر
-  const clickEffect = document.createElement("div");
-  clickEffect.classList.add("soil-click");
-  clickEffect.style.left = (x - 10) + "px";
-  clickEffect.style.bottom = "50px";
-  document.body.appendChild(clickEffect);
-  setTimeout(() => clickEffect.remove(), 500);
-  
-  // زرع الوردة
-  plantFlower(x, currentFlowerType);
-});
+  <script>
+  // كل الكود يعمل بعد تحميل DOM بالكامل لتجنّب أخطاء null
+  document.addEventListener('DOMContentLoaded', () => {
+    // أنواع الزهور
+    const FLOWERS = [
+      { id:'rose',  name:'وردة',        emoji:'🌹', waters:3 },
+      { id:'tulip', name:'توليب',       emoji:'🌷', waters:3 },
+      { id:'sun',   name:'دوّار الشمس', emoji:'🌻', waters:3 },
+      { id:'daisy', name:'أقحوان',      emoji:'🌼', waters:3 },
+    ];
+    const TOOLS = { PLANT:'زرع', WATER:'سقي', HARVEST:'حصاد', SHOVEL:'إزالة' };
 
-// تغيير نوع الوردة المحدد
-document.querySelectorAll('.flower-type-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    document.querySelectorAll('.flower-type-btn').forEach(b => b.classList.remove('active'));
-    e.target.classList.add('active');
-    currentFlowerType = e.target.dataset.type;
+    const state = {
+      tool:'PLANT',
+      selected:'rose',
+      plots: Array.from({length:18},()=>({empty:true})),
+      inventory: Object.fromEntries(FLOWERS.map(f=>[f.id,0])),
+      bouquet: Object.fromEntries(FLOWERS.map(f=>[f.id,0]))
+    };
+
+    const el = {
+      types: document.getElementById('flowerTypes'),
+      garden: document.getElementById('garden'),
+      inv: document.getElementById('inventory'),
+      status: document.getElementById('status'),
+      bouquetControls: document.getElementById('bouquetControls'),
+      bouquetName: document.getElementById('bouquetName'),
+      bouquetStat: document.getElementById('bouquetStat'),
+      bouquetSvg: document.getElementById('bouquetSvg'),
+      bouquetCanvas: document.getElementById('bouquetCanvas'),
+      btnPlant: document.getElementById('tool-plant'),
+      btnWater: document.getElementById('tool-water'),
+      btnHarvest: document.getElementById('tool-harvest'),
+      btnShovel: document.getElementById('tool-shovel'),
+      btnFill: document.getElementById('btn-fill'),
+      btnClear: document.getElementById('btn-clear'),
+      btnExport: document.getElementById('exportPng'),
+      btnMake: document.getElementById('makeBouquet'),
+    };
+
+    // --- اختبارات تشغيل مبكّرة (test cases) ---
+    console.assert(!!el.btnPlant, '#tool-plant يجب أن يوجد');
+    console.assert(!!el.garden, '#garden يجب أن يوجد');
+    console.assert(!!el.bouquetSvg, '#bouquetSvg يجب أن يوجد');
+    console.assert(Array.isArray(FLOWERS) && FLOWERS.length===4, 'يجب وجود 4 أنواع زهور');
+
+    // واجهة اختيار الأنواع
+    function renderTypes(){
+      el.types.innerHTML = '';
+      FLOWERS.forEach(f=>{
+        const opt = document.createElement('button');
+        opt.className = 'opt' + (state.selected===f.id ? ' active' : '');
+        opt.innerHTML = `<span style="font-size:20px">${f.emoji}</span><div><div class="name">${f.name}</div><div class="hint">يسقى ${f.waters} مرات</div></div>`;
+        opt.onclick = ()=>{ state.selected=f.id; renderTypes(); };
+        el.types.appendChild(opt);
+      });
+    }
+
+    // الحديقة
+    function renderGarden(){
+      el.garden.innerHTML = '';
+      state.plots.forEach((p,i)=>{
+        const cell = document.createElement('div');
+        cell.className = 'plot' + (p.empty?' empty':'');
+        const bar = document.createElement('div'); bar.className='waterbar';
+        const prog = document.createElement('span'); bar.appendChild(prog);
+        const lb = document.createElement('div'); lb.className='label';
+
+        if(p.empty){
+          lb.textContent='قطعة أرض فارغة';
+          const placeholder=document.createElement('span'); placeholder.className='seed'; placeholder.style.opacity='.35'; placeholder.textContent='—';
+          cell.appendChild(bar); cell.appendChild(placeholder); cell.appendChild(lb);
+        } else {
+          const f = FLOWERS.find(x=>x.id===p.type);
+          const stage = p.stage||0; const water = p.water||0;
+          prog.style.width = Math.min(100, (water / f.waters)*100) + '%';
+          let contentEl = document.createElement('span');
+          if(stage===0){ contentEl.className='seed';  contentEl.textContent='🟤'; lb.textContent = `${f.name} — بذرة`; }
+          if(stage===1){ contentEl.className='sprout';contentEl.textContent='🌱'; lb.textContent = `${f.name} — نبتة`; }
+          if(stage===2){ contentEl.className='bud';   contentEl.textContent='🌿'; lb.textContent = `${f.name} — برعم`; }
+          if(stage===3){ contentEl.className='bloom'; contentEl.textContent=f.emoji; lb.textContent = `${f.name} — زهرة جاهزة`; }
+          cell.appendChild(bar); cell.appendChild(contentEl); cell.appendChild(lb);
+        }
+
+        cell.addEventListener('click', ()=>{
+          const p = state.plots[i];
+          if(state.tool==='PLANT' && p.empty){
+            const f = FLOWERS.find(x=>x.id===state.selected);
+            state.plots[i] = { empty:false, type:f.id, stage:0, water:0 }; sfx('plant'); saveState(); renderGarden();
+          } else if(state.tool==='WATER' && !p.empty){
+            const f = FLOWERS.find(x=>x.id===p.type);
+            if(p.stage<3){ p.water = Math.min((p.water||0)+1, f.waters); if(p.water >= (p.stage+1)) p.stage = Math.min(3, p.stage+1); }
+            sfx('water'); saveState(); renderGarden();
+          } else if(state.tool==='HARVEST' && !p.empty){
+            if(p.stage<3){ flashPlot(i,'لم يزهر بعد 🌱'); return; }
+            const f = FLOWERS.find(x=>x.id===p.type);
+            const extra = Math.random()<0.35 ? 1 : 0;
+            state.inventory[f.id] += 1 + extra; sfx('harvest');
+            state.plots[i] = { empty:true }; saveState();
+            renderGarden(); renderInventory();
+          } else if(state.tool==='SHOVEL' && !p.empty){
+            state.plots[i] = { empty:true }; sfx('shovel'); saveState(); renderGarden();
+          }
+        });
+
+        el.garden.appendChild(cell);
+      });
+    }
+
+    function flashPlot(i, txt){
+      const card = el.garden.children[i]; if(!card) return; card.style.boxShadow='0 0 0 3px rgba(255,79,122,.35) inset'; card.title=txt; setTimeout(()=>{ card.style.boxShadow=''; card.title=''; }, 500);
+    }
+
+    function renderInventory(){
+      el.inv.innerHTML = '';
+      FLOWERS.forEach(f=>{
+        const card = document.createElement('div'); card.className='card';
+        const left = document.createElement('div'); left.innerHTML = `<div style="font-size:20px">${f.emoji}</div><div class="hint">${f.name}</div>`;
+        const right = document.createElement('div'); right.innerHTML = `<span class="qty">x ${state.inventory[f.id]}</span>`;
+        card.appendChild(left); card.appendChild(right); el.inv.appendChild(card);
+      });
+    }
+
+    // أدوات
+    function setTool(t){
+      state.tool = t; document.querySelectorAll('.toolbar .btn').forEach(b=>b.classList.remove('active'));
+      const map = {PLANT:'#tool-plant', WATER:'#tool-water', HARVEST:'#tool-harvest', SHOVEL:'#tool-shovel'};
+      const target = document.querySelector(map[t]); if(target) target.classList.add('active');
+      el.status.textContent = `وضع: ${TOOLS[t]}`;
+    }
+    // ربط الأدوات (محمي من null)
+    el.btnPlant && (el.btnPlant.onclick = ()=>setTool('PLANT'));
+    el.btnWater && (el.btnWater.onclick = ()=>setTool('WATER'));
+    el.btnHarvest && (el.btnHarvest.onclick = ()=>setTool('HARVEST'));
+    el.btnShovel && (el.btnShovel.onclick = ()=>setTool('SHOVEL'));
+
+    // لوحة البوكيه
+    function renderBouquetControls(){
+      el.bouquetControls.innerHTML = '';
+      FLOWERS.forEach(f=>{
+        const wrap = document.createElement('div'); wrap.className='flex'; wrap.style.border='1px solid var(--stroke)'; wrap.style.borderRadius='12px'; wrap.style.padding='8px'; wrap.style.background='linear-gradient(180deg,#fff,#fff4f8)';
+        wrap.innerHTML = `<div style=\"font-size:20px\">${f.emoji}</div><div class=\"grow hint\">${f.name}</div>`;
+        const minus = document.createElement('button'); minus.className='btn small'; minus.textContent='−';
+        const plus  = document.createElement('button'); plus.className='btn small'; plus.textContent='+';
+        const cnt   = document.createElement('span'); cnt.className='qty'; cnt.textContent='0';
+        minus.onclick = ()=>{ changeBouquet(f.id, -1); cnt.textContent = state.bouquet[f.id]; };
+        plus.onclick  = ()=>{ changeBouquet(f.id, +1); cnt.textContent = state.bouquet[f.id]; };
+        wrap.appendChild(minus); wrap.appendChild(cnt); wrap.appendChild(plus);
+        el.bouquetControls.appendChild(wrap);
+      });
+    }
+
+    function changeBouquet(id, delta){
+      const have = state.inventory[id]; const want = state.bouquet[id] + delta;
+      if(want < 0) return; if(delta>0 && want > have){ toast('لا تملك ما يكفي من هذه الزهرة'); return; }
+      state.bouquet[id] = want; updateBouquetCanvas(); saveState();
+    }
+
+    el.btnMake && (el.btnMake.onclick = ()=>{
+      const total = Object.values(state.bouquet).reduce((a,b)=>a+b,0);
+      if(total<1){ toast('أضف بعض الزهور إلى البوكيه أولًا'); return; }
+      for(const f of FLOWERS){ if(state.bouquet[f.id] > state.inventory[f.id]){ toast('البوكيه يحتاج زهور أكثر من مخزونك'); return; } }
+      for(const f of FLOWERS){ state.inventory[f.id] -= state.bouquet[f.id]; }
+      renderInventory(); const name = el.bouquetName.value.trim() || 'بوكيه بلا اسم';
+      el.bouquetStat.innerHTML = `<span style=\"color:${getComputedStyle(document.documentElement).getPropertyValue('--good').trim()}\">تم إنشاء \"${name}\"</span> — تبدو الباقة أنيقة وملفوفة 🎀`;
+      el.bouquetCanvas.animate([{transform:'scale(1)'},{transform:'scale(1.02)'},{transform:'scale(1)'}],{duration:420, easing:'ease-out'});
+      state.bouquet = Object.fromEntries(FLOWERS.map(f=>[f.id,0])); updateBouquetCanvas(); renderBouquetControls(); saveState();
+    });
+
+    // صوتيات بسيطة (WebAudio)
+    let AudioCtx; function sfx(kind){
+      try{ AudioCtx = AudioCtx || new (window.AudioContext||window.webkitAudioContext)();
+        const o = AudioCtx.createOscillator(); const g = AudioCtx.createGain();
+        o.connect(g); g.connect(AudioCtx.destination);
+        const now = AudioCtx.currentTime; let f=600;
+        if(kind==='water') f=420; if(kind==='harvest') f=320; if(kind==='shovel') f=240; if(kind==='plant') f=500;
+        o.frequency.setValueAtTime(f, now); o.frequency.exponentialRampToValueAtTime(180, now+0.12);
+        g.gain.setValueAtTime(0.12, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.15);
+        o.start(now); o.stop(now+0.16);
+      }catch(e){}
+    }
+
+    // حفظ تلقائي
+    function saveState(){ const data = {plots:state.plots, inventory:state.inventory, bouquet:state.bouquet, selected:state.selected}; localStorage.setItem('flowerGamePink', JSON.stringify(data)); }
+    function loadState(){
+      try{
+        const raw = localStorage.getItem('flowerGamePink');
+        if(!raw){
+          // أول تشغيل: ابدأ بحديقة فاضية تمامًا ثم احفظها مباشرة
+          state.plots = Array.from({length:18},()=>({empty:true}));
+          state.inventory = Object.fromEntries(FLOWERS.map(f=>[f.id,0]));
+          state.bouquet = Object.fromEntries(FLOWERS.map(f=>[f.id,0]));
+          state.selected = 'rose';
+          localStorage.setItem('flowerGamePink:firstRun','done');
+          saveState();
+          return { firstRun:true };
+        }
+        const d = JSON.parse(raw);
+        if(d.plots && Array.isArray(d.plots)) state.plots = d.plots; 
+        if(d.inventory) state.inventory = d.inventory; 
+        if(d.bouquet) state.bouquet = d.bouquet; 
+        if(d.selected) state.selected = d.selected; 
+        return { firstRun:false };
+      }catch(e){
+        console.warn('loadState error', e);
+        return { firstRun:false };
+      }
+    }
+
+    // ===== SVG bouquet rendering =====
+    function svgEl(name, attrs){ const e = document.createElementNS('http://www.w3.org/2000/svg', name); for(const k in attrs){ e.setAttribute(k, attrs[k]); } return e; }
+    function drawStem(g, x1, y1, x2, y2){ const d = `M${x1},${y1} Q ${(x1+x2)/2},${(y1+y2)/2+20} ${x2},${y2}`; g.appendChild(svgEl('path', { d, stroke:'#7ac9a3', 'stroke-width':'3', fill:'none', 'stroke-linecap':'round' })); g.appendChild(svgEl('path', { d, stroke:'#c9efd8', 'stroke-width':'1.2', fill:'none', 'stroke-linecap':'round', opacity:'.5' })); }
+    function drawRose(g, x, y){
+      // وردة حمراء محسنة
+      const grp = svgEl('g', {transform:`translate(${x} ${y})`});
+      grp.appendChild(svgEl('circle',{cx:0, cy:0, r:3.6, fill:'#8b1232'}));
+      const petals = [
+        {r:17, k:1.0, c:'#ff6b8a', s:'#e85377'},
+        {r:14, k:0.92, c:'#ff7d99', s:'#ef5b82'},
+        {r:11, k:0.86, c:'#ff93aa', s:'#f17395'}
+      ];
+      petals.forEach((p, ring)=>{
+        for(let i=0;i<6;i++){
+          const a = (i*60) + (ring*8);
+          const path = svgEl('path', {
+            d: `M0,0 C ${p.r*p.k},${-p.r*0.6} ${p.r*0.6},${-p.r*0.1} ${p.r},0 C ${p.r*0.6},${p.r*0.1} ${p.r*p.k},${p.r*0.6} 0,0`,
+            fill: p.c, stroke: p.s, 'stroke-width': 0.8, opacity: 0.95,
+            transform: `rotate(${a}) translate(${p.r*0.25} 0)`
+          });
+          grp.appendChild(path);
+        }
+      });
+      grp.appendChild(svgEl('ellipse',{cx:-2, cy:-2, rx:6, ry:3, fill:'rgba(255,255,255,0.18)', transform:'rotate(-25)'}));
+      g.appendChild(grp);
+    }
+    function drawTulip(g, x, y){ const grp = svgEl('g', {transform:`translate(${x} ${y})`}); grp.appendChild(svgEl('path',{d:'M-10,0 Q0,-18 10,0 Q0,14 -10,0 Z', fill:'#ff9ec0'})); grp.appendChild(svgEl('path',{d:'M-10,0 Q0,-10 10,0', fill:'none', stroke:'#ff7fb0','stroke-width':'2'})); g.appendChild(grp); }
+    function drawSun(g, x, y){ const grp = svgEl('g', {transform:`translate(${x} ${y})`}); for(let i=0;i<12;i++){ grp.appendChild(svgEl('rect',{x:-2, y:-22, width:4, height:10, fill:'#ffe08a', transform:`rotate(${i*30})`})); } grp.appendChild(svgEl('circle',{cx:0, cy:0, r:10, fill:'#ffd166', stroke:'#e3b94d'})); grp.appendChild(svgEl('circle',{cx:0, cy:0, r:4, fill:'#826f2a'})); g.appendChild(grp); }
+    function drawDaisy(g, x, y){ const grp = svgEl('g', {transform:`translate(${x} ${y})`}); for(let i=0;i<12;i++){ grp.appendChild(svgEl('ellipse',{cx:0, cy:0, rx:8, ry:3.8, fill:'#fff', opacity:'.95', transform:`rotate(${i*30}) translate(9 0)`})); } grp.appendChild(svgEl('circle',{cx:0, cy:0, r:5, fill:'#f2cf5b'})); g.appendChild(grp); }
+    function drawPaperAndRibbon(svg){ const paper = svgEl('path',{ d:'M200 40 L330 170 Q200 340 200 340 Q200 340 70 170 Z', fill:'#ffe9f3', stroke:'#f2c6d8','stroke-width':'2'}); const shadow= svgEl('path',{ d:'M200 40 L330 170 Q200 340 200 340', fill:'none', stroke:'rgba(0,0,0,.12)','stroke-width':'14'}); const ribbonTop = svgEl('path',{ d:'M150 200 Q200 220 250 200', fill:'none', stroke:'#ff98b3', 'stroke-width':'12','stroke-linecap':'round'}); const knot = svgEl('circle',{cx:200, cy:204, r:7, fill:'#ff7aa5'}); const bowL = svgEl('path',{ d:'M195 204 q-26 10 -26 30 q18 -12 26 -20 z', fill:'#ff98b3'}); const bowR = svgEl('path',{ d:'M205 204 q26 10 26 30 q-18 -12 -26 -20 z', fill:'#ff98b3'}); svg.appendChild(paper); svg.appendChild(shadow); svg.appendChild(ribbonTop); svg.appendChild(knot); svg.appendChild(bowL); svg.appendChild(bowR); }
+    function drawBouquet(){
+      const svg = el.bouquetSvg; while(svg.firstChild) svg.removeChild(svg.firstChild);
+      // defs لِتدرجات مستقبلية
+      const defs = svgEl('defs',{});
+      const grad = svgEl('linearGradient',{id:'petalGrad', x1:'0', y1:'0', x2:'0', y2:'1'});
+      grad.appendChild(svgEl('stop',{offset:'0%', 'stop-color':'#fff', 'stop-opacity':'0.15'}));
+      grad.appendChild(svgEl('stop',{offset:'100%', 'stop-color':'#fff', 'stop-opacity':'0'}));
+      defs.appendChild(grad);
+      svg.appendChild(defs);
+
+      drawPaperAndRibbon(svg);
+      const stems = svgEl('g'); svg.appendChild(stems);
+      const flowers = svgEl('g'); svg.appendChild(flowers);
+      const items=[]; FLOWERS.forEach(f=>{ for(let i=0;i<state.bouquet[f.id];i++){ items.push(f.id); } });
+      if(items.length===0){ return; }
+      items.sort((a,b)=> (a==='sun'? -1:0) - (b==='sun'? -1:0));
+      const cx=200, cy=150; const golden = Math.PI*(3-Math.sqrt(5));
+      items.forEach((type,i)=>{
+        const r = 12 + Math.sqrt(i+1)*16; const angle = i*golden;
+        const x = cx + Math.cos(angle)*r*0.95; const y = cy + Math.sin(angle)*r*0.8 - Math.min(i*0.35, 20);
+        drawStem(stems, 200, 240, x, y+10);
+        if(type==='rose') drawRose(flowers,x,y);
+        if(type==='tulip') drawTulip(flowers,x,y);
+        if(type==='sun') drawSun(flowers,x,y);
+        if(type==='daisy') drawDaisy(flowers,x,y);
+      });
+    }
+    function updateBouquetCanvas(){ drawBouquet(); }
+    window.addEventListener('resize', ()=>{ updateBouquetCanvas(); });
+
+    // أزرار مساعدة الحديقة
+    el.btnClear && (el.btnClear.onclick = ()=>{ state.plots = state.plots.map(()=>({empty:true})); saveState(); renderGarden(); });
+    el.btnFill && (el.btnFill.onclick = ()=>{ state.plots = state.plots.map(()=>{ const f = FLOWERS[Math.floor(Math.random()*FLOWERS.length)]; return { empty:false, type:f.id, stage:0, water:0 }; }); saveState(); renderGarden(); });
+
+    // إشعار صغير
+    let toastT=null; function toast(msg){ clearTimeout(toastT); let box=document.getElementById('toast'); if(!box){ box=document.createElement('div'); box.id='toast'; document.body.appendChild(box); Object.assign(box.style,{position:'fixed',left:'50%',bottom:'24px',transform:'translateX(-50%)',background:'#fff0f5',border:'1px solid #f2b9cf',padding:'10px 14px',borderRadius:'12px',color:'#6a3e57',fontWeight:'800',zIndex:99,boxShadow:'0 10px 30px rgba(0,0,0,.12)'});} box.textContent=msg; box.style.opacity='1'; toastT=setTimeout(()=>{ box.style.opacity='0'; }, 1600); }
+
+    // === تصدير صورة PNG مع الخلفية ===
+    function exportBouquetPNG(){
+      const svg = el.bouquetSvg; if(!svg){ toast('لا توجد معاينة قابلة للتصدير'); return; }
+      const box = el.bouquetCanvas.getBoundingClientRect();
+      const w = Math.max(400, Math.round(box.width));
+      const h = Math.max(360, Math.round(box.height));
+      const baseDPR = (w < 520 ? 1.5 : 2);
+      const scale = Math.min(3, Math.max(baseDPR, (window.devicePixelRatio||2)));
+      const cw = Math.round(w*scale), ch = Math.round(h*scale);
+      const canvas = document.createElement('canvas'); canvas.width=cw; canvas.height=ch; const ctx = canvas.getContext('2d');
+      // خلفية وردية + توهج مثل CSS
+      ctx.fillStyle = '#ffe9f3'; ctx.fillRect(0,0,cw,ch);
+      const cxg = cw*0.5, cyg = -ch*0.1; const rg = ch*0.9;
+      const grad = ctx.createRadialGradient(cxg, cyg, 0, cxg, cyg, rg);
+      grad.addColorStop(0, '#ffd6e7'); grad.addColorStop(0.65, '#ffe9f3'); grad.addColorStop(1, '#ffe9f3');
+      ctx.fillStyle = grad; ctx.fillRect(0,0,cw,ch);
+      const gx = cw*0.5, gy = ch*0.05, gr = Math.max(cw,ch)*0.7;
+      const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
+      glow.addColorStop(0, 'rgba(255,182,204,0.18)'); glow.addColorStop(1, 'rgba(255,182,204,0)');
+      ctx.fillStyle = glow; ctx.fillRect(0,0,cw,ch);
+      // رسم SVG فوق الخلفية
+      const clone = svg.cloneNode(true);
+      clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
+      const xml = new XMLSerializer().serializeToString(clone);
+      const blob = new Blob([xml], {type:'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = ()=>{ ctx.drawImage(img, 0, 0, cw, ch); URL.revokeObjectURL(url); const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = (el.bouquetName.value.trim() || 'bouquet') + '.png'; document.body.appendChild(a); a.click(); a.remove(); toast('تم تصدير الصورة ✅'); };
+      img.onerror = ()=>{ URL.revokeObjectURL(url); toast('تعذّر تصدير SVG'); };
+      img.src = url;
+    }
+    el.btnExport && el.btnExport.addEventListener('click', exportBouquetPNG);
+
+    // تحميل ثم تهيئة
+    function init(){
+      const info = loadState();
+      renderTypes();
+      renderGarden();
+      renderInventory();
+      renderBouquetControls();
+      updateBouquetCanvas();
+      setTool('PLANT');
+      window.__firstRun = !!info.firstRun;
+      if(window.__firstRun){ console.info('First run: garden starts empty.'); }
+    }
+    try{ init(); }catch(err){
+      console.error('Init failed:', err);
+      const warn = document.createElement('div');
+      warn.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);background:#fff0f5;border:1px solid #f2b9cf;padding:10px 14px;border-radius:12px;color:#6a3e57;font-weight:800;zIndex:100';
+      warn.textContent='حدث خطأ في تشغيل اللعبة. افتح Console لمعرفة التفاصيل.';
+      document.body.appendChild(warn);
+    }
+
+    // ===== اختبارات إضافية (لا تغيّر الحالة النهائية) =====
+    try{
+      // 1) setTool يفعّل زر السقي
+      setTool('WATER'); console.assert(document.querySelector('#tool-water').classList.contains('active'), 'زر السقي يجب أن يصبح Active');
+      setTool('PLANT');
+      // 2) إن كان أول تشغيل، يجب أن تكون كل القطع فارغة (18)
+      if(window.__firstRun){
+        const emptyCount = state.plots.filter(p=>p.empty===true).length;
+        console.assert(emptyCount===18, 'في أول تشغيل يجب أن تبدأ كل قطع التربة فاضية (18/18)');
+      }
+      // 3) محاكاة زرع مؤقت ثم إرجاع الحالة
+      const snapshot = JSON.stringify(state.plots);
+      state.plots[0] = {empty:false,type:'rose',stage:0,water:0}; renderGarden();
+      console.assert(document.querySelector('#garden .plot .seed'), 'يجب ظهور بذرة بعد الزرع');
+      state.plots = JSON.parse(snapshot); renderGarden();
+      // 4) التحقق من دالة التصدير
+      console.assert(typeof exportBouquetPNG === 'function', 'exportBouquetPNG يجب أن تكون دالة');
+    }catch(testErr){ console.warn('Self-tests failed:', testErr); }
+
   });
-});
-
-// الورود النازلة بأنواع مختلفة
-setInterval(()=>{
-  const x = Math.random() * window.innerWidth;
-  const types = ['rose-red', 'rose-pink', 'rose-yellow', 'rose-purple', 'rose-white', 'rose-orange'];
-  const randomType = types[Math.floor(Math.random() * types.length)];
-  createFallingFlower(x, -20, randomType);
-},1200);
-
-// 🌹 زرع الوردة
-function plantFlower(x, type){
-  const flower = document.createElement("div");
-  flower.classList.add("flower", type);
-  flower.style.left = (x - 40) + "px";
-
-  // ساق الوردة
-  const stem = document.createElement("div");
-  stem.classList.add("stem");
-  flower.appendChild(stem);
-
-  // أوراق الساق
-  const leaf1 = document.createElement("div");
-  leaf1.classList.add("leaf", "left");
-  leaf1.style.bottom = "50px";
-  flower.appendChild(leaf1);
-  
-  const leaf2 = document.createElement("div");
-  leaf2.classList.add("leaf", "right");
-  leaf2.style.bottom = "90px";
-  flower.appendChild(leaf2);
-
-  // زهرة الوردة
-  const bloom = document.createElement("div");
-  bloom.classList.add("bloom");
-  flower.appendChild(bloom);
-
-  // مركز الوردة
-  const center = document.createElement("div");
-  center.classList.add("center");
-  bloom.appendChild(center);
-
-  // 6 بتلات خارجية
-  for(let i=0; i<6; i++){
-    const petal = document.createElement("div");
-    petal.classList.add("petal");
-    const angle = i*60;
-    petal.style.transform = `rotate(${angle}deg) translateY(-25px)`;
-    bloom.appendChild(petal);
-  }
-
-  // 5 بتلات داخلية
-  for(let i=0; i<5; i++){
-    const innerPetal = document.createElement("div");
-    innerPetal.classList.add("inner-petal");
-    const angle = i*72;
-    innerPetal.style.transform = `rotate(${angle}deg) translateY(-15px)`;
-    bloom.appendChild(innerPetal);
-  }
-
-  // حصاد الوردة
-  flower.addEventListener("click",(e)=>{
-    e.stopPropagation();
-    
-    // تأثير الحصاد
-    const harvestEffect = document.createElement("div");
-    harvestEffect.classList.add("harvest-effect");
-    harvestEffect.textContent = "🌹";
-    harvestEffect.style.left = e.clientX + "px";
-    harvestEffect.style.top = e.clientY + "px";
-    document.body.appendChild(harvestEffect);
-    
-    flower.style.transition = "transform 0.5s, opacity 0.5s";
-    flower.style.transform = "scale(1.5)";
-    flower.style.opacity = "0";
-    
-    setTimeout(() => {
-      flower.remove();
-      harvestEffect.remove();
-      score++;
-      document.getElementById("score").innerText = `الورد المحصود: ${score}`;
-    }, 500);
-  });
-
-  document.body.appendChild(flower);
-}
-
-// 🌼 إنشاء وردة نازلة
-function createFallingFlower(x, y, type){
-  const flower = document.createElement("div");
-  flower.classList.add("falling-flower", "falling", type);
-  flower.style.left = x + "px";
-  flower.style.top = y + "px";
-
-  // مركز الوردة النازلة
-  const center = document.createElement("div");
-  center.classList.add("center");
-  center.style.width = "15px";
-  center.style.height = "15px";
-  flower.appendChild(center);
-
-  // 5 بتلات خارجية للوردة النازلة
-  for(let i=0; i<5; i++){
-    const petal = document.createElement("div");
-    petal.classList.add("petal");
-    petal.style.width = "20px";
-    petal.style.height = "20px";
-    const angle = i*72;
-    petal.style.transform = `rotate(${angle}deg) translateY(-12px)`;
-    flower.appendChild(petal);
-  }
-
-  document.body.appendChild(flower);
-  setTimeout(()=>flower.remove(),8000);
-}
-</script>
+  </script>
 </body>
 </html>
